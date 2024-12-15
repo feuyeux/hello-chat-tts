@@ -3,6 +3,8 @@
 - <https://chattts.com/zh>
 - https://github.com/2noise/ChatTTS/blob/main/docs/cn/README.md
 
+预备备
+
 ```sh
 (base) han@alienware:/mnt/d/coding$ which python
 /home/han/anaconda3/bin/python
@@ -10,16 +12,21 @@ python -m pip install --upgrade pip
 pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
+创建ChatTTS的conda环境
+
 ```sh
 conda create -n tts_env python=3.11
 conda activate tts_env
 which python
 
-# /home/han/anaconda3/envs/tts_env/bin/python
-# D:\garden\anaconda3\envs\tts_env
+# WSL: /home/han/anaconda3/envs/tts_env
+# Windows: D:\garden\anaconda3\envs\tts_env
 ```
 
+下载ChatTTS代码并安装依赖
+
 ```sh
+cd /mnt/d/coding
 git clone https://github.com/2noise/ChatTTS
 cd ChatTTS
 # sudo apt install gcc
@@ -27,32 +34,37 @@ cd ChatTTS
 # gcc --version
 # conda install -c conda-forge pyproject2conda
 pip install -r requirements.txt
+pip uninstall torch torchvision torchaudio -y
+pip install torch==2.1.2 torchaudio==2.1.2 --index-url https://download.pytorch.org/whl/cu121
 ```
 
-```sh
-git lfs install
-git clone https://www.modelscope.cn/pzc163/chatTTS.git pzc163_chatTTS
-# git clone https://huggingface.co/2Noise/ChatTTS HF_ChatTTS
-```
+运行示例
 
 ```sh
 cp /mnt/d/coding/hello-chat-tts/hello_tts.py /mnt/d/coding/ChatTTS/
 python /mnt/d/coding/ChatTTS/hello_tts.py
 ```
 
+(可选)本地模式
+
 ```sh
-pip uninstall torch torchvision torchaudio -y
-pip install torch==2.1.2 torchaudio==2.1.2 --index-url https://download.pytorch.org/whl/cu121 --proxy http://localhost:57885
+cd /mnt/d/coding
+git lfs install
+# 魔塔
+git clone https://www.modelscope.cn/pzc163/chatTTS.git pzc163_chatTTS
+# 抱抱脸
+git clone https://huggingface.co/2Noise/ChatTTS HF_ChatTTS
 ```
 
-Traceback (most recent call last):
-  File "/mnt/d/coding/ChatTTS/hello_tts.py", line 9, in <module>
-    chat.load_models(compile=True,source='local', local_path=modelPath)
-  File "/mnt/d/coding/ChatTTS/ChatTTS/core.py", line 59, in load_models
-    if not check_all_assets(update=True):
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/mnt/d/coding/ChatTTS/ChatTTS/utils/download.py", line 61, in check_all_assets
-    current_dir, model, os.environ[f"sha256_asset_{menv}"], update
-                        ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<frozen os>", line 679, in __getitem__
-KeyError: 'sha256_asset_Decoder_pt'
+```python
+pzc163_chatTTS = "/mnt/d/coding/pzc163_chatTTS"
+HF_ChatTTS = "/mnt/d/coding/HF_ChatTTS"
+modelPath = pzc163_chatTTS
+
+chat.load(
+    source="local",
+    custom_path=modelPath,
+    compile=False,
+    # device='cuda',
+)
+```
